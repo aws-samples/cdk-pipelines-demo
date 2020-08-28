@@ -3,7 +3,7 @@
 This branch contains sample code in Python used for the
 CDK Pipelines Webinar.
 
-[Back to the main repo](https://github.com/aws-samples/cdk-pipelines-demo)
+[Back to `main` branch](https://github.com/aws-samples/cdk-pipelines-demo)
 
 ## Webinar: Enhanced CI/CD with AWS CDK
 
