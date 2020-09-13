@@ -1,42 +1,72 @@
 import { Construct, Stack, StackProps } from '@aws-cdk/core';
-import { AssetCode, Runtime, Function } from '@aws-cdk/aws-lambda'
-import { LambdaRestApi } from '@aws-cdk/aws-apigateway'
-import { CfnOutput, SecretValue } from '@aws-cdk/core';
+import { SecretValue } from '@aws-cdk/core';
 import { Artifact } from '@aws-cdk/aws-codepipeline';
 import { GitHubSourceAction, GitHubTrigger } from '@aws-cdk/aws-codepipeline-actions';
-import { CdkPipeline, SimpleSynthAction } from '@aws-cdk/pipelines';
-import path = require('path');
+import { CdkPipeline, ShellScriptAction, SimpleSynthAction } from '@aws-cdk/pipelines';
+import { WebServiceStage } from './webservice_stage';
 
-export class PipelinesStack extends Stack {
+export class PipelineStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
         const sourceArtifact = new Artifact();
         const cloudAssemblyArtifact = new Artifact();
-        const oauthToken = new SecretValue('cdk-pipeline-pat');
+
         const sourceAction = new GitHubSourceAction({
             actionName: 'GitHub',
+            output: sourceArtifact,
+            oauthToken: new SecretValue('cdk-pipeline-pat'),
             owner: 'stephen-cloud',
             repo: 'cdk-pipelines-demo',
-            output: sourceArtifact,
-            oauthToken: oauthToken,
-            trigger: GitHubTrigger.WEBHOOK
-        })
+            branch: 'typescript',
+            trigger: GitHubTrigger.POLL
+        });
+
         const synthAction = new SimpleSynthAction({
             sourceArtifact,
             cloudAssemblyArtifact,
             installCommands: [
-                'npm install -g aws-cli',
-                'npm install'
+                'npm install -g aws-cdk',
+                'npm install',
             ],
-            synthCommand: 'cdk synth'
-        })
+            buildCommands: [
+                'npm run build',
+                'npm run unit',
+            ],
+            synthCommand: 'npm run build && cdk synth'
+        });
 
-        new CdkPipeline(this, 'Pipeline', {
+        const pipeline = new CdkPipeline(this, 'Pipeline', {
             cloudAssemblyArtifact,
             sourceAction,
             synthAction
-        })
+        });
+
+        // Pre-prod
+        //
+        const preProdApp = new WebServiceStage(this, 'Pre-Prod');
+        const preProdStage = pipeline.addApplicationStage(preProdApp);
+        const serviceUrl = pipeline.stackOutput(preProdApp.urlOutput);
+
+        preProdStage.addActions(new ShellScriptAction({
+            actionName: 'IntegrationTests',
+            runOrder: preProdStage.nextSequentialRunOrder(),
+            additionalArtifacts: [
+                sourceArtifact
+            ],
+            commands: [
+                'npm i',
+                'npm run build',
+                'npm run integration'
+            ],
+            useOutputs: {
+                SERVICE_URL: serviceUrl
+            }
+        }));
+
+        // Prod
+        //
+        const prodApp = new WebServiceStage(this, 'Prod');
+        const prodStage = pipeline.addApplicationStage(prodApp);
     }
 }
-

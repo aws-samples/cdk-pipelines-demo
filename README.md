@@ -1,14 +1,22 @@
-# Welcome to your CDK TypeScript project!
+# CDK Pipelines Demo -- TypeScript
 
-This is a blank project for TypeScript development with CDK.
+This branch contains sample code used for the
+CDK Pipelines Webinar. The TypeScript version was created from scratch by following
+the seminar below.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+[Back to `main` branch](https://github.com/aws-samples/cdk-pipelines-demo)
 
-## Useful commands
+## Webinar: Enhanced CI/CD with AWS CDK
 
- * `npm run build`   compile typescript to js
- * `npm run watch`   watch for changes and compile
- * `npm run test`    perform the jest unit tests
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk synth`       emits the synthesized CloudFormation template
+[![Enhanced CI/CD with AWS CDK](http://img.youtube.com/vi/1ps0Wh19MHQ/0.jpg)](https://www.youtube.com/watch?v=1ps0Wh19MHQ)
+
+## TypeScript Release Notes
+
+The `.ts` files are mostly the same as the `.py` with a couple of inline resources
+pulled out for clarity.
+
+The use of multiple jest configs is probably the wrong approach.
+
+The CORS config for the REST API does not allow the integration test to run as intended and I
+did not debug that yet.
+
