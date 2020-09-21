@@ -9,6 +9,8 @@ offer this example in. The examples are currently offered in (click the links be
 | Language | Branch |
 |---|---
 | [Python](https://github.com/aws-samples/cdk-pipelines-demo/tree/python) | [python](https://github.com/aws-samples/cdk-pipelines-demo/tree/python)
+| [TypeScript](https://github.com/aws-samples/cdk-pipelines-demo/tree/typescript) | [typescript](https://github.com/aws-samples/cdk-pipelines-demo/tree/typescript)
+
 
 ## Webinar: Enhanced CI/CD with AWS CDK
 
