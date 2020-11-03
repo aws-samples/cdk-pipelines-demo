@@ -83,8 +83,8 @@ export class PipelinesWebinarStack extends Stack {
         CANARY_NAME: canary.canaryName
       }
     });
-    
-    postHookLambda.role?.addToPrincipalPolicy(new iam.PolicyStatement({
+
+    preHookLambda.addToRolePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: [
         'synthetics:StartCanary', 
@@ -92,6 +92,14 @@ export class PipelinesWebinarStack extends Stack {
     ],
     }));
 
+    postHookLambda.addToRolePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: [
+        'synthetics:StartCanary', 
+        'synthetics:StopCanary'
+    ],
+    }));
+    
     new codedeploy.LambdaDeploymentGroup(this, 'DeploymentGroup', {
       alias,
       deploymentConfig: codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES,
