@@ -21,7 +21,12 @@ exports.startCanary = async (event: any) => {
         lifecycleEventHookExecutionId: event.LifecycleEventHookExecutionId,
         status: result // status can be 'Succeeded' or 'Failed'
     };
-    codedeploy.putLifecycleEventHookExecutionStatus(params).promise();
+    try {
+        await codedeploy.putLifecycleEventHookExecutionStatus(params).promise();
+    } catch ( error ) {
+        console.error(error);
+        throw error;
+    }
 };
 
 exports.stopCanary = async (event: any) => {
@@ -43,5 +48,9 @@ exports.stopCanary = async (event: any) => {
         lifecycleEventHookExecutionId: event.LifecycleEventHookExecutionId,
         status: result // status can be 'Succeeded' or 'Failed'
     };
-    codedeploy.putLifecycleEventHookExecutionStatus(params).promise();
-};
+    try {
+        await codedeploy.putLifecycleEventHookExecutionStatus(params).promise();
+    } catch ( error ) {
+        console.error(error);
+        throw error;
+    }};
