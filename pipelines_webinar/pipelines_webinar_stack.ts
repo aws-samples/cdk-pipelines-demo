@@ -1,6 +1,7 @@
 import path = require('path');
 import { CfnOutput, Construct, Duration, Stack, StackProps } from '@aws-cdk/core';
 import * as lambda from '@aws-cdk/aws-lambda'
+import * as iam from '@aws-cdk/aws-iam'
 import * as apigw from '@aws-cdk/aws-apigateway'
 import * as codedeploy from '@aws-cdk/aws-codedeploy'
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
@@ -45,7 +46,7 @@ export class PipelinesWebinarStack extends Stack {
     // });
 
     const canary = new synthetics.Canary(this, 'RegressionTesting', {
-      schedule: synthetics.Schedule.rate(Duration.minutes(1)),
+      schedule: synthetics.Schedule.once(),
       test: synthetics.Test.custom({
         code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
         handler: 'apiCall.handler',
@@ -64,12 +65,41 @@ export class PipelinesWebinarStack extends Stack {
       comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
     });
 
+    const preHookLambda = new lambda.Function(this, 'startCanary', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'loop.startCanary',
+      code: lambda.Code.fromAsset(path.join(__dirname, 'canary')),
+      environment: {
+        CANARY_NAME: canary.canaryName
+
+      }
+    });
+
+    const postHookLambda = new lambda.Function(this, 'stopCanary', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'loop.stopCanary',
+      code: lambda.Code.fromAsset(path.join(__dirname, 'canary')),
+      environment: {
+        CANARY_NAME: canary.canaryName
+      }
+    });
+    
+    postHookLambda.role?.addToPrincipalPolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: [
+        'synthetics:StartCanary', 
+        'synthetics:StopCanary'
+    ],
+    }));
+
     new codedeploy.LambdaDeploymentGroup(this, 'DeploymentGroup', {
       alias,
       deploymentConfig: codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES,
       alarms: [
         failureAlarm
-      ]
+      ],
+      preHook: preHookLambda,
+      postHook: postHookLambda
     });
 
     this.urlOutput = new CfnOutput(this, 'url', { value: api.url });
