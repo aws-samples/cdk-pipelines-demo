@@ -47,62 +47,8 @@ export class PipelinesWebinarStack extends Stack {
     const canary = new synthetics.Canary(this, 'RegressionTesting', {
       schedule: synthetics.Schedule.rate(Duration.minutes(1)),
       test: synthetics.Test.custom({
-        code: synthetics.Code.fromInline(`
-        var synthetics = require('Synthetics');
-        const log = require('SyntheticsLogger');
-        const https = require('https');
-        const http = require('http');
-
-        const apiCanaryBlueprint = async function () {
-            const postData = "";
-
-            const verifyRequest = async function (requestOption) {
-              return new Promise((resolve, reject) => {
-                log.info("Making request with options: " + JSON.stringify(requestOption));
-                let req
-                if (requestOption.port === 443) {
-                  req = https.request(requestOption);
-                } else {
-                  req = http.request(requestOption);
-                }
-                req.on('response', (res) => {
-                  log.info(\`Status Code: \${res.statusCode}\`)
-                  log.info(\`Response Headers: \${JSON.stringify(res.headers)}\`)
-                  //If the response status code is not a 2xx success code
-                  if (res.statusCode < 200 || res.statusCode > 299) {
-                    reject("Failed: " + requestOption.path);
-                  }
-                  res.on('data', (d) => {
-                    log.info("Response: " + d);
-                  });
-                  res.on('end', () => {
-                    resolve();
-                  })
-                });
-
-                req.on('error', (error) => {
-                  reject(error);
-                });
-
-                if (postData) {
-                  req.write(postData);
-                }
-                req.end();
-              });
-            }
-
-            const headers = {}
-            headers['User-Agent'] = [synthetics.getCanaryUserAgentString(), headers['User-Agent']].join(' ');
-            const requestOptions = {"hostname":"2gjukwbrp4.execute-api.eu-west-1.amazonaws.com","method":"GET","path":"/prod/","port":443}
-            requestOptions['headers'] = headers;
-            await verifyRequest(requestOptions);
-        };
-
-        exports.handler = async () => {
-            return await apiCanaryBlueprint();
-        };
-        `),
-        handler: 'index.handler',
+        code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+        handler: 'apiCall.handler',
       }),
       runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
     });
