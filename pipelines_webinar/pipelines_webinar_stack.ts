@@ -36,7 +36,7 @@ export class PipelinesWebinarStack extends Stack {
       }),
       runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
     });
-    canary.node.addDependency(api);
+    // canary.node.addDependency(api);
 
     const failureAlarm = new cloudwatch.Alarm(this, 'CanaryAlarm', {
       metric: canary.metricSuccessPercent(),
