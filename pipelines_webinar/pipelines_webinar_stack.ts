@@ -65,7 +65,9 @@ export class PipelinesWebinarStack extends Stack {
       comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
     });
 
+    // TODO: Add stage to function name to avoid collision with stages
     const preHookLambda = new lambda.Function(this, 'startCanary', {
+      functionName: 'CodeDeployHook_PreHookLambda',
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'loop.startCanary',
       code: lambda.Code.fromAsset(path.join(__dirname, 'canary')),
@@ -76,6 +78,7 @@ export class PipelinesWebinarStack extends Stack {
     });
 
     const postHookLambda = new lambda.Function(this, 'stopCanary', {
+      functionName: 'CodeDeployHook_PostHookLambda',
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'loop.stopCanary',
       code: lambda.Code.fromAsset(path.join(__dirname, 'canary')),
@@ -100,7 +103,7 @@ export class PipelinesWebinarStack extends Stack {
     ],
     }));
     
-    new codedeploy.LambdaDeploymentGroup(this, 'DeploymentGroup', {
+    const lambdaDeploymentGroup = new codedeploy.LambdaDeploymentGroup(this, 'DeploymentGroup', {
       alias,
       deploymentConfig: codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES,
       alarms: [
@@ -108,7 +111,7 @@ export class PipelinesWebinarStack extends Stack {
       ],
       preHook: preHookLambda,
       postHook: postHookLambda
-    });
+    });    
 
     this.urlOutput = new CfnOutput(this, 'url', { value: api.url });
   }
