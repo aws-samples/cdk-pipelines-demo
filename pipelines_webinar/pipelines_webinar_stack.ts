@@ -76,7 +76,7 @@ export class PipelinesWebinarStack extends Stack {
 
     // TODO: Add stage to function name to avoid collision with stages
     const preHookLambda = new lambda.Function(this, 'startCanary', {
-      functionName: 'CodeDeployHook_PreHookLambda',
+      functionName: `CodeDeployHook_PreHookLambda-${this.node.id}`,
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'loop.startCanary',
       code: lambda.Code.fromAsset(path.join(__dirname, 'canary')),
@@ -87,7 +87,7 @@ export class PipelinesWebinarStack extends Stack {
     });
 
     const postHookLambda = new lambda.Function(this, 'stopCanary', {
-      functionName: 'CodeDeployHook_PostHookLambda',
+      functionName: `CodeDeployHook_PostHookLambda-${this.node.id}`,
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'loop.stopCanary',
       code: lambda.Code.fromAsset(path.join(__dirname, 'canary')),
