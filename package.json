@@ -5,7 +5,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest -c jest.config.unit.js",
-    "integration": "jest -c jest.config.integration.js"
+    "integration": "jest -c jest.config.integration.js",
+    "cdk": "cdk"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.71.0",
