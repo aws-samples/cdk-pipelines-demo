@@ -14,6 +14,7 @@ export class PipelineStack extends Stack {
         const sourceAction = new cpa.GitHubSourceAction({
             actionName: 'GitHub',
             output: sourceArtifact,
+            branch: 'main',
             oauthToken: SecretValue.secretsManager('github-token'),
             owner: 'flochaz',
             repo: 'cdk-pipelines-demo',
@@ -22,13 +23,14 @@ export class PipelineStack extends Stack {
         const synthAction = pipelines.SimpleSynthAction.standardNpmSynth({
             sourceArtifact,
             cloudAssemblyArtifact,
-            buildCommand: 'npm run build && npm test',
+            buildCommand: 'npm run build && npm test'
         });
 
         const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
             cloudAssemblyArtifact,
             sourceAction,
-            synthAction
+            synthAction,
+            selfMutating: false
         });
 
         // Pre-prod
