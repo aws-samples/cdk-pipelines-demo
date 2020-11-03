@@ -6,6 +6,8 @@ import * as apigw from '@aws-cdk/aws-apigateway'
 import * as codedeploy from '@aws-cdk/aws-codedeploy'
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as synthetics from '@aws-cdk/aws-synthetics';
+import * as ssm from '@aws-cdk/aws-ssm';
+
 
 export class PipelinesWebinarStack extends Stack {
   urlOutput: CfnOutput;
@@ -45,6 +47,12 @@ export class PipelinesWebinarStack extends Stack {
     //   evaluationPeriods: 1,
     // });
 
+    new ssm.StringParameter(this, 'APIURL', {
+      parameterName: 'APIURL',
+      stringValue: api.url
+    });
+
+    // TODO: Add parameter store for url 
     const canary = new synthetics.Canary(this, 'RegressionTesting', {
       schedule: synthetics.Schedule.rate(Duration.minutes(1)),
       test: synthetics.Test.custom({
@@ -53,7 +61,6 @@ export class PipelinesWebinarStack extends Stack {
       }),
       runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
     });
-    canary.node.addDependency(api);
 
     const failureAlarm = new cloudwatch.Alarm(this, 'CanaryAlarm', {
       metric: canary.metricSuccessPercent({
