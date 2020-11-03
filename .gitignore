@@ -2,8 +2,12 @@
 !jest.config.js
 !jest.config.unit.js
 !jest.config.integration.js
+!pipelines_webinar/canary/nodejs/node_modules/apiCall.js
+
 *.d.ts
 node_modules
+!pipelines_webinar/canary/nodejs/node_modules
+
 
 # CDK asset staging directory
 .cdk.staging

@@ -45,8 +45,6 @@ export class PipelinesWebinarStack extends Stack {
       comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
     });
 
-
-
     new codedeploy.LambdaDeploymentGroup(this, 'DeploymentGroup ', {
       alias,
       deploymentConfig: codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_10MINUTES,
