@@ -55,8 +55,11 @@ export class PipelinesWebinarStack extends Stack {
     // canary.node.addDependency(api);
 
     const failureAlarm = new cloudwatch.Alarm(this, 'CanaryAlarm', {
-      metric: canary.metricSuccessPercent(),
-      evaluationPeriods: 2,
+      metric: canary.metricSuccessPercent({
+        period: Duration.minutes(1),
+        statistic: cloudwatch.Statistic.AVERAGE
+      }),
+      evaluationPeriods: 1,
       threshold: 90,
       comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
     });
