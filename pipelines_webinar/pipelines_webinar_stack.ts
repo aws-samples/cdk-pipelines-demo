@@ -46,14 +46,14 @@ export class PipelinesWebinarStack extends Stack {
     // });
 
     const canary = new synthetics.Canary(this, 'RegressionTesting', {
-      schedule: synthetics.Schedule.once(),
+      schedule: synthetics.Schedule.rate(Duration.minutes(1)),
       test: synthetics.Test.custom({
         code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
         handler: 'apiCall.handler',
       }),
       runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
     });
-    // canary.node.addDependency(api);
+    canary.node.addDependency(api);
 
     const failureAlarm = new cloudwatch.Alarm(this, 'CanaryAlarm', {
       metric: canary.metricSuccessPercent({
