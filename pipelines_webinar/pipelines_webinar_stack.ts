@@ -47,7 +47,7 @@ export class PipelinesWebinarStack extends Stack {
     const canary = new synthetics.Canary(this, 'RegressionTesting', {
       schedule: synthetics.Schedule.rate(Duration.minutes(1)),
       test: synthetics.Test.custom({
-        code: synthetics.Code..fromInline(`
+        code: synthetics.Code.fromInline(`
         var synthetics = require('Synthetics');
         const log = require('SyntheticsLogger');
         const https = require('https');
@@ -102,7 +102,7 @@ export class PipelinesWebinarStack extends Stack {
             return await apiCanaryBlueprint();
         };
         `),
-        handler: 'apiCall.handler',
+        handler: 'index.handler',
       }),
       runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
     });
