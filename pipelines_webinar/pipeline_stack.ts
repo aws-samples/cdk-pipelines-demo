@@ -14,7 +14,7 @@ export class PipelineStack extends Stack {
         const sourceAction = new cpa.GitHubSourceAction({
             actionName: 'GitHub',
             output: sourceArtifact,
-            branch: 'main',
+            branch: 'typescript',
             oauthToken: SecretValue.secretsManager('github-token'),
             owner: 'flochaz',
             repo: 'cdk-pipelines-demo',
