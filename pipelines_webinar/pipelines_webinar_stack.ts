@@ -4,7 +4,6 @@ import * as lambda from '@aws-cdk/aws-lambda'
 import * as apigw from '@aws-cdk/aws-apigateway'
 import * as codedeploy from '@aws-cdk/aws-codedeploy'
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as synthetics from '@aws-cdk/aws-synthetics';
 
 export class PipelinesWebinarStack extends Stack {
   urlOutput: CfnOutput;
@@ -28,21 +27,19 @@ export class PipelinesWebinarStack extends Stack {
       handler: alias,
     });
 
-    const canary = new synthetics.Canary(this, 'RegressionTesting', {
-      schedule: synthetics.Schedule.rate(Duration.minutes(5)),
-      test: synthetics.Test.custom({
-        code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
-        handler: 'apiCall.handler',
-      }),
-      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    const apiGateway5xx = new cloudwatch.Metric({
+      metricName: '5XXError',
+      namespace: 'AWS/ApiGateway',
+      dimensions: {
+        ApiName: 'Gateway'
+      },
+      statistic: 'Sum',
+      period: Duration.minutes(1)
     });
-    // canary.node.addDependency(api);
-
-    const failureAlarm = new cloudwatch.Alarm(this, 'CanaryAlarm', {
-      metric: canary.metricSuccessPercent(),
-      evaluationPeriods: 2,
-      threshold: 90,
-      comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
+    const failureAlarm = new cloudwatch.Alarm(this, 'RollbackAlarm', {
+      metric: apiGateway5xx,
+      threshold: 1,
+      evaluationPeriods: 1,
     });
 
     new codedeploy.LambdaDeploymentGroup(this, 'DeploymentGroup ', {
