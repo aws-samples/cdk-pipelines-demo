@@ -47,7 +47,7 @@ export class PipelinesWebinarStack extends Stack {
     //   evaluationPeriods: 1,
     // });
 
-    new ssm.StringParameter(this, 'APIURL', {
+    const apiUrlParam = new ssm.StringParameter(this, 'APIURL', {
       parameterName: 'APIURL',
       stringValue: api.url
     });
@@ -62,6 +62,8 @@ export class PipelinesWebinarStack extends Stack {
       runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
     });
 
+    apiUrlParam.grantRead(canary.role);
+    
     const failureAlarm = new cloudwatch.Alarm(this, 'CanaryAlarm', {
       metric: canary.metricSuccessPercent({
         period: Duration.minutes(1),
