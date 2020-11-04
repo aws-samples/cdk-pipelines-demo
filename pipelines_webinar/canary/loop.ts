@@ -12,7 +12,11 @@ exports.startCanary = async (event: any) => {
         console.log(`canary ${process.env.CANARY_NAME} started`);
         result = 'Succeeded';
     } catch (error) {
-        result = 'Failed';
+        if (error.code === 'ConflictException') {
+            result = 'Succeeded';
+        } else {
+            result = 'Failed';
+        }
     }
 
 
