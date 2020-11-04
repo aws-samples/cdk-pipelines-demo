@@ -30,7 +30,7 @@ export class PipelineStack extends Stack {
             cloudAssemblyArtifact,
             sourceAction,
             synthAction,
-            selfMutating: false
+            selfMutating: true
         });
 
         // Pre-prod
