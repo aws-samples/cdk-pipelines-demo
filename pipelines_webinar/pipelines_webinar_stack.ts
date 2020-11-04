@@ -57,6 +57,7 @@ export class PipelinesWebinarStack extends Stack {
         handler: 'apiCall.handler',
       }),
       runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+      startAfterCreation: false
     });
 
     const apiUrlParam = new ssm.StringParameter(this, 'APIURL', {
