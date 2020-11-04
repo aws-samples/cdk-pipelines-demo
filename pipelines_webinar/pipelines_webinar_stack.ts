@@ -47,10 +47,7 @@ export class PipelinesWebinarStack extends Stack {
     //   evaluationPeriods: 1,
     // });
 
-    const apiUrlParam = new ssm.StringParameter(this, 'APIURL', {
-      parameterName: 'APIURL',
-      stringValue: api.url
-    });
+    
 
     // TODO: Add parameter store for url 
     const canary = new synthetics.Canary(this, 'RegressionTesting', {
@@ -60,6 +57,12 @@ export class PipelinesWebinarStack extends Stack {
         handler: 'apiCall.handler',
       }),
       runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    });
+
+    const apiUrlParam = new ssm.StringParameter(this, 'APIURL', {
+      parameterName: `${canary.canaryName}-APIURL`,
+      simpleName: true,
+      stringValue: api.url
     });
 
     apiUrlParam.grantRead(canary.role);
