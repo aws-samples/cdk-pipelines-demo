@@ -2,7 +2,7 @@ const AWS = require('aws-sdk');
 
 export const handler = async (event: any = {}): Promise<any> => {
     return {
-        body: 'v2 OK',
-        statusCode: 200,
+        body: 'v3 KO',
+        statusCode: 500,
     };
 };
