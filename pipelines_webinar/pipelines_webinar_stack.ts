@@ -27,7 +27,7 @@ export class PipelinesWebinarStack extends Stack {
     });
 
     const api = new apigw.LambdaRestApi(this, 'Gateway', {
-      description: 'Endpoint for a simple Lambda-powered web service v5',
+      description: 'Endpoint for a simple Lambda-powered web service',
       handler: alias,
     });
 
