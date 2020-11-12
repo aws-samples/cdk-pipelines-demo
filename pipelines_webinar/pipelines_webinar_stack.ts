@@ -122,7 +122,7 @@ export class PipelinesWebinarStack extends Stack {
       percentage: 99,
     });
 
-    const lambdaDeploymentGroup = new codedeploy.LambdaDeploymentGroup(this, 'DeploymentGroup', {
+    new codedeploy.LambdaDeploymentGroup(this, 'DeploymentGroup', {
       alias,
       deploymentConfig: lambdaDeploymentConfig,
       alarms: [
