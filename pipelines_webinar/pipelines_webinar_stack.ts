@@ -118,7 +118,7 @@ export class PipelinesWebinarStack extends Stack {
     
     const lambdaDeploymentGroup = new codedeploy.LambdaDeploymentGroup(this, 'DeploymentGroup', {
       alias,
-      deploymentConfig: codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES,
+      deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
       alarms: [
         failureAlarm
       ],
