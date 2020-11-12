@@ -13,6 +13,6 @@ test('Lambda Handler', () => {
     .filter((resource) => resource[1]['Type'] === 'AWS::Lambda::Function');
 
   // THEN
-  expect(functions.length).toEqual(3);
+  expect(functions.length).toEqual(4);
   expect(functions[0][1].Properties.Handler).toEqual('handler.handler');
 });

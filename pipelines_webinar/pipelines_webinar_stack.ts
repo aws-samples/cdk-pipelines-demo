@@ -116,7 +116,7 @@ export class PipelinesWebinarStack extends Stack {
     ],
     }));
     
-    const LambdaDeploymentConfig = new codedeploy.CustomLambdaDeploymentConfig(this, 'CustomConfig', {
+    const lambdaDeploymentConfig = new codedeploy.CustomLambdaDeploymentConfig(this, 'CustomConfig', {
       type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
       interval: Duration.minutes(5),
       percentage: 99,
@@ -124,7 +124,7 @@ export class PipelinesWebinarStack extends Stack {
 
     const lambdaDeploymentGroup = new codedeploy.LambdaDeploymentGroup(this, 'DeploymentGroup', {
       alias,
-      deploymentConfig: LambdaDeploymentConfig,
+      deploymentConfig: lambdaDeploymentConfig,
       alarms: [
         failureAlarm
       ],
