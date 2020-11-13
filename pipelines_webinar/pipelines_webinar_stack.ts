@@ -63,7 +63,7 @@ export class PipelinesWebinarStack extends Stack {
     const preHookLambda = new lambda.Function(this, 'startCanary', {
       functionName: `CodeDeployHook_Pre-${this.stackName}`,
       runtime: lambda.Runtime.NODEJS_10_X,
-      handler: 'loop.startCanary',
+      handler: 'canaryController.startCanary',
       code: lambda.Code.fromAsset(path.join(__dirname, 'canary')),
       environment: {
         CANARY_NAME: canary.canaryName
@@ -74,7 +74,7 @@ export class PipelinesWebinarStack extends Stack {
     const postHookLambda = new lambda.Function(this, 'stopCanary', {
       functionName: `CodeDeployHook_Post-${this.stackName}`,
       runtime: lambda.Runtime.NODEJS_10_X,
-      handler: 'loop.stopCanary',
+      handler: 'canaryController.stopCanary',
       code: lambda.Code.fromAsset(path.join(__dirname, 'canary')),
       environment: {
         CANARY_NAME: canary.canaryName
