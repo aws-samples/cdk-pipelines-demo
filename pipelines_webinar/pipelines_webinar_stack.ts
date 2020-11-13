@@ -31,25 +31,6 @@ export class PipelinesWebinarStack extends Stack {
       handler: alias,
     });
 
-    // const apiGateway5xx = new cloudwatch.Metric({
-    //   metricName: '5XXError',
-    //   namespace: 'AWS/ApiGateway',
-    //   dimensions: {
-    //     ApiName: 'Gateway'
-    //   },
-    //   statistic: 'Sum',
-    //   period: Duration.minutes(1)
-    // });
-
-    // const failureAlarm = new cloudwatch.Alarm(this, 'RollbackAlarm', {
-    //   metric: apiGateway5xx,
-    //   threshold: 1,
-    //   evaluationPeriods: 1,
-    // });
-
-    
-
-    // TODO: Add parameter store for url 
     const canary = new synthetics.Canary(this, 'RegressionTesting', {
       schedule: synthetics.Schedule.rate(Duration.minutes(1)),
       test: synthetics.Test.custom({
