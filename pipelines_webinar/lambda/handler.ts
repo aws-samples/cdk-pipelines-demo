@@ -1,8 +1,6 @@
-const AWS = require('aws-sdk');
-
 export const handler = async (event: any = {}): Promise<any> => {
   return {
-    body: 'Hello',
+    body: 'Hello from the Lambda',
     statusCode: 200,
   };
 };
