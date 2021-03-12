@@ -1,8 +1,14 @@
 import path = require('path');
-import { CfnOutput, Construct, Duration, Stack, StackProps } from '@aws-cdk/core';
-import * as lambda from '@aws-cdk/aws-lambda'
-import * as apigw from '@aws-cdk/aws-apigateway'
-import * as codedeploy from '@aws-cdk/aws-codedeploy'
+import {
+  CfnOutput,
+  Construct,
+  Duration,
+  Stack,
+  StackProps,
+} from '@aws-cdk/core';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as apigw from '@aws-cdk/aws-apigateway';
+import * as codedeploy from '@aws-cdk/aws-codedeploy';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 
 export class PipelinesWebinarStack extends Stack {
@@ -19,7 +25,7 @@ export class PipelinesWebinarStack extends Stack {
 
     const alias = new lambda.Alias(this, 'x', {
       aliasName: 'Current',
-      version: handler.currentVersion
+      version: handler.currentVersion,
     });
 
     const api = new apigw.LambdaRestApi(this, 'Gateway', {
@@ -31,10 +37,10 @@ export class PipelinesWebinarStack extends Stack {
       metricName: '5XXError',
       namespace: 'AWS/ApiGateway',
       dimensions: {
-        ApiName: 'Gateway'
+        ApiName: 'Gateway',
       },
       statistic: 'Sum',
-      period: Duration.minutes(1)
+      period: Duration.minutes(1),
     });
     const failureAlarm = new cloudwatch.Alarm(this, 'RollbackAlarm', {
       metric: apiGateway5xx,
@@ -44,10 +50,9 @@ export class PipelinesWebinarStack extends Stack {
 
     new codedeploy.LambdaDeploymentGroup(this, 'DeploymentGroup ', {
       alias,
-      deploymentConfig: codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_10MINUTES,
-      alarms: [
-        failureAlarm
-      ]
+      deploymentConfig:
+        codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES,
+      alarms: [failureAlarm],
     });
 
     this.urlOutput = new CfnOutput(this, 'url', { value: api.url });

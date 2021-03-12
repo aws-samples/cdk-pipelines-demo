@@ -1,22 +1,17 @@
+/**
+ * @jest-environment node
+ */
+
 import axios from 'axios';
 
 test('200 Response', async () => {
-    console.log('env ->', process.env);
+  // Arrange
+  const url = process.env.SERVICE_URL ?? 'No SERVICE_URL in env';
+  console.log('url ->', url);
 
-    const url = process.env.SERVICE_URL ?? 'No SERVICE_URL in env'
-    console.log('url ->', url);
+  // Act
+  const response = await axios.get(url);
 
-    // TODO: Figure out why CORS on API isn't working
-    //
-    // await axios.request({
-    //     url
-    // }).then(response => {
-    //     console.log('response ->', response);
-
-    //     expect(response.status).toEqual(200);
-    // }).catch(error => {
-    //     console.log('error ->', error);
-
-    //     fail(error);
-    // });
+  // Assert
+  expect(response.status).toEqual(200);
 });
