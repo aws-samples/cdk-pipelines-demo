@@ -19,9 +19,11 @@ export class PipelineStack extends Stack {
                 commands: [
                     'npm install',
                     'npm run build',
-                    'npm run test',
-                    'cdk synth'
-                ]
+                    'npx cdk synth'
+                ],
+                env: {
+                  NPM_CONFIG_UNSAFE_PERM: 'true'
+                }
             }),
         });
 
