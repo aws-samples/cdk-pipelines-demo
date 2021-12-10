@@ -1,4 +1,4 @@
-import { App } from '@aws-cdk/core';
+import { App } from 'aws-cdk-lib/core';
 import { PipelinesWebinarStack } from '../pipelines_webinar/pipelines_webinar_stack';
 
 test('Lambda Handler', () => {

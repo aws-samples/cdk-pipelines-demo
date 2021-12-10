@@ -1,9 +1,10 @@
 import path = require('path');
-import { CfnOutput, Construct, Duration, Stack, StackProps } from '@aws-cdk/core';
-import * as lambda from '@aws-cdk/aws-lambda'
-import * as apigw from '@aws-cdk/aws-apigateway'
-import * as codedeploy from '@aws-cdk/aws-codedeploy'
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import { Construct } from 'constructs';
+import { CfnOutput, Duration, Stack, StackProps } from 'aws-cdk-lib/core';
+import * as lambda from 'aws-cdk-lib/aws-lambda'
+import * as apigw from 'aws-cdk-lib/aws-apigateway'
+import * as codedeploy from 'aws-cdk-lib/aws-codedeploy'
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
 export class PipelinesWebinarStack extends Stack {
   urlOutput: CfnOutput;
@@ -30,7 +31,7 @@ export class PipelinesWebinarStack extends Stack {
     const apiGateway5xx = new cloudwatch.Metric({
       metricName: '5XXError',
       namespace: 'AWS/ApiGateway',
-      dimensions: {
+      dimensionsMap: {
         ApiName: 'Gateway'
       },
       statistic: 'Sum',
