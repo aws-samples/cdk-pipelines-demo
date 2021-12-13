@@ -48,5 +48,6 @@ export class PipelineStack extends Stack {
         //
         const prodApp = new WebServiceStage(this, 'Prod');
         const prodStage = pipeline.addStage(prodApp);
+        prodStage.addPre(new pipelines.ManualApprovalStep('Approval'));
     }
 }
