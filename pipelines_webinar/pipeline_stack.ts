@@ -1,7 +1,5 @@
 import {Construct} from 'constructs';
-import { SecretValue, Stack, StackProps } from 'aws-cdk-lib/core';
-import * as cp from 'aws-cdk-lib/aws-codepipeline';
-import * as cpa from 'aws-cdk-lib/aws-codepipeline-actions';
+import { SecretValue, Stack, StackProps } from 'aws-cdk-lib';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 import { WebServiceStage } from './webservice_stage';
 

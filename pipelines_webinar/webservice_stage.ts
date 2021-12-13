@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnOutput, StackProps, Stage } from 'aws-cdk-lib/core';
+import { CfnOutput, StackProps, Stage } from 'aws-cdk-lib';
 import { PipelinesWebinarStack } from './pipelines_webinar_stack';
 
 export class WebServiceStage extends Stage {
