@@ -5,11 +5,17 @@ import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as apigw from 'aws-cdk-lib/aws-apigateway'
 import * as codedeploy from 'aws-cdk-lib/aws-codedeploy'
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import { ENV } from './webservice_stage';
+
+
+export interface PipelinesWebinarStackProps extends StackProps{
+  environment:ENV
+}
 
 export class PipelinesWebinarStack extends Stack {
   urlOutput: CfnOutput;
 
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props: PipelinesWebinarStackProps) {
     super(scope, id, props);
 
     const handler = new lambda.Function(this, 'Handler', {
@@ -54,7 +60,7 @@ export class PipelinesWebinarStack extends Stack {
 
     new codedeploy.LambdaDeploymentGroup(this, 'DeploymentGroup ', {
       alias,
-      deploymentConfig: codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_10MINUTES,
+      deploymentConfig: props.environment==ENV.PROD?codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_10MINUTES:codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
       alarms: [
         failureAlarm
       ]

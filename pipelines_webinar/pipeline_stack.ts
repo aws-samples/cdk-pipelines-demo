@@ -1,7 +1,7 @@
 import {Construct} from 'constructs';
 import { SecretValue, Stack, StackProps } from 'aws-cdk-lib';
 import * as pipelines from 'aws-cdk-lib/pipelines';
-import { WebServiceStage } from './webservice_stage';
+import { ENV, WebServiceStage } from './webservice_stage';
 
 export class PipelineStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
@@ -29,7 +29,9 @@ export class PipelineStack extends Stack {
 
         // Pre-prod
         //
-        const preProdApp = new WebServiceStage(this, 'Pre-Prod');
+        const preProdApp = new WebServiceStage(this, 'Pre-Prod', {
+            environment: ENV.SDLC
+        });
         const preProdStage = pipeline.addStage(preProdApp);
 
         preProdStage.addPost(new pipelines.ShellStep('IntegrationTests', {
@@ -46,7 +48,9 @@ export class PipelineStack extends Stack {
 
         // Prod
         //
-        const prodApp = new WebServiceStage(this, 'Prod');
+        const prodApp = new WebServiceStage(this, 'Prod', {
+            environment: ENV.PROD
+        });
         const prodStage = pipeline.addStage(prodApp);
         prodStage.addPre(new pipelines.ManualApprovalStep('Approval'));
     }

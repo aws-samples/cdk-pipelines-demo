@@ -1,12 +1,14 @@
 import { App } from 'aws-cdk-lib/core';
 import { PipelinesWebinarStack } from '../pipelines_webinar/pipelines_webinar_stack';
+import { ENV } from '../pipelines_webinar/webservice_stage';
+
 
 test('Lambda Handler', () => {
   // GIVEN
   const app = new App();
 
   // WHEN
-  new PipelinesWebinarStack(app, 'Stack');
+  new PipelinesWebinarStack(app, 'Stack', {environment: ENV.SDLC});
 
   const template = app.synth().getStackByName('Stack').template['Resources'] as Map<String, any>
   const functions = Object.entries(template)
