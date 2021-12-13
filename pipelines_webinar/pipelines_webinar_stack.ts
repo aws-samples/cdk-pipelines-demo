@@ -28,12 +28,10 @@ export class PipelinesWebinarStack extends Stack {
       handler: alias,
       defaultCorsPreflightOptions: {
         allowHeaders: [
-          'Content-Type',
-          'X-Amz-Date',
-          'Authorization',
-          'X-Api-Key',
+          '*',
+          'Authorization'
         ],
-        allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        allowMethods: ['OPTIONS', 'GET'],
         allowCredentials: true,
         allowOrigins: ['*'],
       }
