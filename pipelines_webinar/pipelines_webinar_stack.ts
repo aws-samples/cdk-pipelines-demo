@@ -1,6 +1,6 @@
 import path = require('path');
 import { Construct } from 'constructs';
-import { CfnOutput, Duration, Stack, StackProps } from 'aws-cdk-lib/core';
+import { CfnOutput, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as apigw from 'aws-cdk-lib/aws-apigateway'
 import * as codedeploy from 'aws-cdk-lib/aws-codedeploy'
