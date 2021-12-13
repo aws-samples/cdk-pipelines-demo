@@ -14,8 +14,10 @@ export class PipelineStack extends Stack {
         const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
             synth: new pipelines.ShellStep('Synth', {
                 input: source,
+                installCommands: [
+                    'npm install'
+                ],
                 commands: [
-                    'npm install',
                     'npm run build',
                     'npx cdk synth'
                 ],
