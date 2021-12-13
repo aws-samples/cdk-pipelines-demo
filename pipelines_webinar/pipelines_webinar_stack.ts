@@ -15,7 +15,7 @@ export class PipelinesWebinarStack extends Stack {
     const handler = new lambda.Function(this, 'Handler', {
       code: new lambda.AssetCode(path.resolve(__dirname, 'lambda')),
       handler: 'handler.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const alias = new lambda.Alias(this, 'x', {
@@ -26,6 +26,17 @@ export class PipelinesWebinarStack extends Stack {
     const api = new apigw.LambdaRestApi(this, 'Gateway', {
       description: 'Endpoint for a simple Lambda-powered web service',
       handler: alias,
+      defaultCorsPreflightOptions: {
+        allowHeaders: [
+          'Content-Type',
+          'X-Amz-Date',
+          'Authorization',
+          'X-Api-Key',
+        ],
+        allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        allowCredentials: true,
+        allowOrigins: ['*'],
+      }
     });
 
     const apiGateway5xx = new cloudwatch.Metric({
