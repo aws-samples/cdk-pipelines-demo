@@ -60,7 +60,7 @@ export class PipelinesWebinarStack extends Stack {
 
     new codedeploy.LambdaDeploymentGroup(this, 'DeploymentGroup ', {
       alias,
-      deploymentConfig: props.environment==ENV.PROD?codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_10MINUTES:codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
+      deploymentConfig: props.environment===ENV.PROD?codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_10MINUTES:codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
       alarms: [
         failureAlarm
       ]
