@@ -1,20 +1,27 @@
 import path = require('path');
-import { CfnOutput, Construct, Duration, Stack, StackProps } from '@aws-cdk/core';
-import * as lambda from '@aws-cdk/aws-lambda'
-import * as apigw from '@aws-cdk/aws-apigateway'
-import * as codedeploy from '@aws-cdk/aws-codedeploy'
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import { Construct } from 'constructs';
+import { CfnOutput, Duration, Stack, StackProps } from 'aws-cdk-lib';
+import * as lambda from 'aws-cdk-lib/aws-lambda'
+import * as apigw from 'aws-cdk-lib/aws-apigateway'
+import * as codedeploy from 'aws-cdk-lib/aws-codedeploy'
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import { ENV } from './webservice_stage';
+
+
+export interface PipelinesWebinarStackProps extends StackProps{
+  environment:ENV
+}
 
 export class PipelinesWebinarStack extends Stack {
   urlOutput: CfnOutput;
 
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props: PipelinesWebinarStackProps) {
     super(scope, id, props);
 
     const handler = new lambda.Function(this, 'Handler', {
       code: new lambda.AssetCode(path.resolve(__dirname, 'lambda')),
       handler: 'handler.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const alias = new lambda.Alias(this, 'x', {
@@ -25,12 +32,21 @@ export class PipelinesWebinarStack extends Stack {
     const api = new apigw.LambdaRestApi(this, 'Gateway', {
       description: 'Endpoint for a simple Lambda-powered web service',
       handler: alias,
+      defaultCorsPreflightOptions: {
+        allowHeaders: [
+          '*',
+          'Authorization'
+        ],
+        allowMethods: ['OPTIONS', 'GET'],
+        allowCredentials: true,
+        allowOrigins: ['*'],
+      }
     });
 
     const apiGateway5xx = new cloudwatch.Metric({
       metricName: '5XXError',
       namespace: 'AWS/ApiGateway',
-      dimensions: {
+      dimensionsMap: {
         ApiName: 'Gateway'
       },
       statistic: 'Sum',
@@ -44,7 +60,7 @@ export class PipelinesWebinarStack extends Stack {
 
     new codedeploy.LambdaDeploymentGroup(this, 'DeploymentGroup ', {
       alias,
-      deploymentConfig: codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_10MINUTES,
+      deploymentConfig: props.environment===ENV.PROD?codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_10MINUTES:codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
       alarms: [
         failureAlarm
       ]

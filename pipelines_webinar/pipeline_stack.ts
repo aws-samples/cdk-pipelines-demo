@@ -1,61 +1,57 @@
-import { Construct, SecretValue, Stack, StackProps } from '@aws-cdk/core';
-import * as cp from '@aws-cdk/aws-codepipeline';
-import * as cpa from '@aws-cdk/aws-codepipeline-actions';
-import * as pipelines from '@aws-cdk/pipelines';
-import { WebServiceStage } from './webservice_stage';
+import {Construct} from 'constructs';
+import { SecretValue, Stack, StackProps } from 'aws-cdk-lib';
+import * as pipelines from 'aws-cdk-lib/pipelines';
+import { ENV, WebServiceStage } from './webservice_stage';
 
 export class PipelineStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
-        const sourceArtifact = new cp.Artifact();
-        const cloudAssemblyArtifact = new cp.Artifact();
-
-        const sourceAction = new cpa.GitHubSourceAction({
-            actionName: 'GitHub',
-            output: sourceArtifact,
-            oauthToken: SecretValue.secretsManager('github-token'),
-            owner: 'OWNER',
-            repo: 'REPO',
+        const source = pipelines.CodePipelineSource.gitHub('OWNER/REPO', 'BRANCH', {
+            authentication: SecretValue.secretsManager('github-token')
         });
 
-        const synthAction = pipelines.SimpleSynthAction.standardNpmSynth({
-            sourceArtifact,
-            cloudAssemblyArtifact,
-            buildCommand: 'npm run build && npm test',
-        });
-
-        const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
-            cloudAssemblyArtifact,
-            sourceAction,
-            synthAction
+        const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+            synth: new pipelines.ShellStep('Synth', {
+                input: source,
+                installCommands: [
+                    'npm install'
+                ],
+                commands: [
+                    'npm run build',
+                    'npx cdk synth'
+                ],
+                env: {
+                  NPM_CONFIG_UNSAFE_PERM: 'true'
+                }
+            }),
         });
 
         // Pre-prod
         //
-        const preProdApp = new WebServiceStage(this, 'Pre-Prod');
-        const preProdStage = pipeline.addApplicationStage(preProdApp);
-        const serviceUrl = pipeline.stackOutput(preProdApp.urlOutput);
+        const preProdApp = new WebServiceStage(this, 'Pre-Prod', {
+            environment: ENV.SDLC
+        });
+        const preProdStage = pipeline.addStage(preProdApp);
 
-        preProdStage.addActions(new pipelines.ShellScriptAction({
-            actionName: 'IntegrationTests',
-            runOrder: preProdStage.nextSequentialRunOrder(),
-            additionalArtifacts: [
-                sourceArtifact
-            ],
+        preProdStage.addPost(new pipelines.ShellStep('IntegrationTests', {
+            input: source,
             commands: [
                 'npm install',
                 'npm run build',
                 'npm run integration'
             ],
-            useOutputs: {
-                SERVICE_URL: serviceUrl
+            envFromCfnOutputs: {
+                SERVICE_URL: preProdApp.urlOutput
             }
         }));
 
         // Prod
         //
-        const prodApp = new WebServiceStage(this, 'Prod');
-        const prodStage = pipeline.addApplicationStage(prodApp);
+        const prodApp = new WebServiceStage(this, 'Prod', {
+            environment: ENV.PROD
+        });
+        const prodStage = pipeline.addStage(prodApp);
+        prodStage.addPre(new pipelines.ManualApprovalStep('Approval'));
     }
 }
