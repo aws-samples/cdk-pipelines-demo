@@ -7,8 +7,8 @@ export class PipelineStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
-        const source = pipelines.CodePipelineSource.gitHub('jeromevdl/cdk-pipelines-demo', 'cdkv2', {
-            authentication: SecretValue.secretsManager('GITHUB_TOKEN')
+        const source = pipelines.CodePipelineSource.gitHub('OWNER/REPO', 'BRANCH', {
+            authentication: SecretValue.secretsManager('github_token')
         });
 
         const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
