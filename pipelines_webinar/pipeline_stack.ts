@@ -8,7 +8,7 @@ export class PipelineStack extends Stack {
         super(scope, id, props);
 
         const source = pipelines.CodePipelineSource.gitHub('OWNER/REPO', 'BRANCH', {
-            authentication: SecretValue.secretsManager('github_token')
+            authentication: SecretValue.secretsManager('github-token')
         });
 
         const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
