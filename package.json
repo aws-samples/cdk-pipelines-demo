@@ -8,11 +8,11 @@
     "integration": "jest -c jest.config.integration.js"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "2.0.0",
+    "@aws-cdk/assert": "2.1.0",
     "@types/axios": "^0.14.0",
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",
-    "aws-cdk": "2.0.0",
+    "aws-cdk": "2.1.0",
     "axios": "^0.19.0",
     "jest": "^26.4.2",
     "ts-jest": "^26.2.0",
